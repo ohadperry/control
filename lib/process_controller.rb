@@ -6,7 +6,8 @@ class Control_P
 	OPTIONS_ATTRIBUTES = {action: 'action', pid: 'pid_filename', find_pid_by: 'find_pid_by',
 												app_name: 'app_name', port_num: 'port_num', app_filename: 'app_filename',
 												http_server: 'http_server', kill_command: 'kill_command',
-												restart_command: 'restart_command', start_command: 'start_command'}.with_indifferent_access
+												restart_command: 'restart_command', environment: 'environment',
+												start_command: 'start_command'}.with_indifferent_access
 
 	FIND_BY_OPTIONS = {app_filename: 'app_filename', port_num: 'port_num', app_name: 'app_name', pid_file: 'pid_file'}.with_indifferent_access
 	HOSTNAME = Socket.gethostname
@@ -16,6 +17,13 @@ class Control_P
 		options = options.with_indifferent_access
 		#TODO options validations
 		action 				= options.fetch(OPTIONS_ATTRIBUTES[:action], nil)
+		environment 	= options.fetch(OPTIONS_ATTRIBUTES[:environment], nil)
+
+		if action.nil? || environment.nil?
+			p "didn't pass enough arguments"
+			p 'Usage: {start|stop|restart|status} {env}, exiting'
+			exit(1)
+		end
 
 		case action
 			when 'start'
