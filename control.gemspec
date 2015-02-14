@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version       = Control::VERSION
   s.authors       = ['ohad partuck']
   s.email         = ['ohadpartuck@gmail.com']
-  s.homepage      = 'http://open-source.com'
+  s.homepage      = 'https://github.com/ohadpartuck/control'
   s.licenses      = ['MIT']
   s.summary       = %q{stop/start/restart}
   s.description   = %q{Generic stop/start/restart for processes}
