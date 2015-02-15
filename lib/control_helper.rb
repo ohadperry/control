@@ -62,7 +62,7 @@ module ControlHelper
 		attributes = Control_P::OPTIONS_ATTRIBUTES
 
 		start_command = options.fetch(attributes[:start_command])
-
+		p "dir is #{Dir.pwd}"
 		p "trying to start a new using  start_command: #{start_command}"
 
 		pid = spawn(start_command)
