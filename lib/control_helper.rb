@@ -75,6 +75,7 @@ module ControlHelper
 		p 'checking if there\'s a running process'
 		old_pid = find_app_pid(options)
 		if old_pid
+			app_name = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:app_name], '')
 			p "#{app_name} is already running. old_pid is #{old_pid} exiting"
 			exit(1)
 		end
@@ -103,11 +104,11 @@ module ControlHelper
 			return true if res
 			sleep 5
 			old_pid = find_app_pid(options)
+			app_name = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:app_name], '')
 			if old_pid
 				p "error in kill process #{app_name}. found pid #{old_pid} try number #{try}"
 				exit(1) if try == num_tries
 			else
-				app_name = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:app_name], '')
 				p "#{app_name}, it's dead."
 				return true
 			end
