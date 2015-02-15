@@ -20,6 +20,6 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   #TODO maybe replace this. it might be too much just for with_indifferent_access :-)
-  s.add_runtime_dependency 'activesupport', '~> 4.2'
+  s.add_runtime_dependency 'activesupport', '~> 4.1'
 
 end
