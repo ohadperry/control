@@ -3,13 +3,16 @@ require 'control_helper'
 require 'active_support/core_ext/hash/indifferent_access'
 
 class Control_P
-	OPTIONS_ATTRIBUTES = {action: 'action', pid: 'pid_filename', find_pid_by: 'find_pid_by',
-												app_name: 'app_name', port_num: 'port_num', app_filename: 'app_filename',
-												http_server: 'http_server', kill_command: 'kill_command',
-												restart_command: 'restart_command', environment: 'environment',
-												start_command: 'start_command'}.with_indifferent_access
+	OPTIONS_ATTRIBUTES = {action: 'action', pid_filename: 'pid_filename', find_pid_by: 'find_pid_by',
+							app_name: 'app_name', port_num: 'port_num', app_filename: 'app_filename',
+							http_server: 'http_server', kill_command: 'kill_command',
+							restart_command: 'restart_command', environment: 'environment',
+							start_command: 'start_command'}.with_indifferent_access
 
 	FIND_BY_OPTIONS = {app_filename: 'app_filename', port_num: 'port_num', app_name: 'app_name', pid_file: 'pid_file'}.with_indifferent_access
+	WORKERS_STARTED_EXTENTION = '*.started'
+	WORKERS_CLOSED_EXTENTION = '*.closed'
+
 	HOSTNAME = Socket.gethostname
 
 	# Main Method for all actions
@@ -50,6 +53,7 @@ class Control_P
 		#means it's seamless, just need to send a kill signal and it will restart it self
 		if http_server
 			helper.restart_the_app!(options)
+			sleep(5)
 		else
 			helper.kill_the_old_process_if_needed(options)
 			helper.start_a_new_process!(options)

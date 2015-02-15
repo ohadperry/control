@@ -2,7 +2,7 @@ module ControlHelper
 	extend self
 
 	def find_app_pid(options)
-		pid_filename = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:pid], nil)
+		pid_filename = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:pid_filename], nil)
 
 		if pid_filename
 			get_pid_from_file(pid_filename)
@@ -23,13 +23,14 @@ module ControlHelper
 	end
 
 	def get_pid_from_file(pid_filename)
+		return nil unless File.exists?(pid_filename)
 		File.open(pid_filename, &:readline).strip
 	end
 	
 
 	def find_pid_with_ps(search_by_string)
 		pid = nil
-		procs = `ps aux`
+		procs = `ps aux | grep #{search_by_string}` # todo add grep
 
 		procs.each_line do |proc|
 			if proc.include?(search_by_string)
@@ -95,9 +96,21 @@ module ControlHelper
 		p "error in killing process #{e.inspect}"
 	end
 
+	# Note , only valid for http servers
 	def restart_the_app!(options)
-		restart_command = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:restart_command])
-		`#{restart_command}`
+		if app_not_running?(options)
+			start_a_new_process!(options)
+		else
+			restart_command = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:restart_command])
+			`#{restart_command}`
+			sleep(5)
+		end
+	end
+
+	def app_not_running?(options)
+		pid_filename = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:pid_filename], nil)
+		raise "no pid filename found in #{options}" if pid_filename.nil?
+		'' == `cat #{pid_filename}`
 	end
 
 	def kill_with_retries!(options)
@@ -124,11 +137,27 @@ module ControlHelper
 		pid = find_app_pid(options)
 		if pid
 			p "#{prefix} Ok, Restarted. new pid #{pid}"
+			print_workers_started_and_stopped(options) if http_server?(options)
 			exit(0)
 		else
 			p "#{prefix} problem restarting. Check your code. #{pid}"
 			exit(1)
 		end
+	end
+
+	#TODO add option to overwrite the file names
+	def print_workers_started_and_stopped(options)
+		print_workers_and_delete_files!('workers started', Control_P::WORKERS_STARTED_EXTENTION)
+		print_workers_and_delete_files!('workers closed', Control_P::WORKERS_CLOSED_EXTENTION)
+	end
+
+	def print_workers_and_delete_files!(type, extention)
+		p "#{Dir[extention].length.to_s} #{type}"
+		Dir.glob(extention).each { |f| File.delete(f) }
+	end
+
+	def http_server?(options)
+		true == options.fetch(Control_P::OPTIONS_ATTRIBUTES[:http_server], false) 
 	end
 
 	def kill_the_old_process_if_needed(options)
