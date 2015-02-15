@@ -35,6 +35,8 @@ class Control_P
 			else
 				raise "action #{action} not implemented"
 		end
+		# drom some reason the remote ssh is not exiting, making sure it exit here
+		exit(0)
 	end
 
 	def self.helper
@@ -70,3 +72,4 @@ class Control_P
 	end
 
 end
+

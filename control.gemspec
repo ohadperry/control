@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   # s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ['lib']
 
+  #TODO maybe replace this. it might be too much just for with_indifferent_access :-)
   s.add_runtime_dependency 'activesupport', '~> 4.2'
 
 end
