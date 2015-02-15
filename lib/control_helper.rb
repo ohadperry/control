@@ -66,7 +66,10 @@ module ControlHelper
 		p "trying to start a new using  start_command: #{start_command}"
 
 		pid = spawn(start_command)
-		Process.detach(pid) if pid
+		if pid
+			Process.detach(pid) 
+			p "detached pid #{pid} from the main program"
+		end	
 		sleep 5 # give the new app enough time to crash
 		find_app_pid(options)
 	end
