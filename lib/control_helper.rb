@@ -99,9 +99,13 @@ module ControlHelper
 	# Note , only valid for http servers
 	def restart_the_app!(options)
 		if app_not_running?(options)
+			p 'app not running, starting a new process'
 			start_a_new_process!(options)
 		else
+
 			restart_command = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:restart_command])
+			p "app running, restarting using #{restart_command}"
+			
 			`#{restart_command}`
 			sleep(5)
 		end
