@@ -7,7 +7,7 @@ class Control_P
 							app_name: 'app_name', port_num: 'port_num', app_filename: 'app_filename',
 							http_server: 'http_server', kill_command: 'kill_command',
 							restart_command: 'restart_command', environment: 'environment',
-							start_command: 'start_command'}.with_indifferent_access
+							start_command: 'start_command', skip_workers_message: 'skip_workers_message'}.with_indifferent_access
 
 	FIND_BY_OPTIONS = {app_filename: 'app_filename', port_num: 'port_num', app_name: 'app_name', pid_file: 'pid_file'}.with_indifferent_access
 	WORKERS_STARTED_EXTENTION = '*.started'

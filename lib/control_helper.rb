@@ -141,7 +141,9 @@ module ControlHelper
 		pid = find_app_pid(options)
 		if pid
 			p "#{prefix} Ok, Restarted. new pid #{pid}"
-			print_workers_started_and_stopped(options) if http_server?(options)
+			if http_server?(options) && !skip_workers_message?(options)
+				print_workers_started_and_stopped(options) 
+			end	
 			exit(0)
 		else
 			p "#{prefix} problem restarting. Check your code. #{pid}"
@@ -153,6 +155,10 @@ module ControlHelper
 	def print_workers_started_and_stopped(options)
 		print_workers_and_delete_files!('workers started', Control_P::WORKERS_STARTED_EXTENTION)
 		print_workers_and_delete_files!('workers closed', Control_P::WORKERS_CLOSED_EXTENTION)
+	end
+
+	def skip_workers_message?(options)
+		options.fetch(Control_P::OPTIONS_ATTRIBUTES[:http_server], false)
 	end
 
 	def print_workers_and_delete_files!(type, extention)
