@@ -114,7 +114,10 @@ module ControlHelper
 	def app_not_running?(options)
 		pid_filename = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:pid_filename], nil)
 		raise "no pid filename found in #{options}" if pid_filename.nil?
-		'' == `cat #{pid_filename}`
+		p "working directory is #{Dir.pwd}"
+		res = `cat #{pid_filename}`
+		p "result from cat master_pid is #{res}"
+		'' == res
 	end
 
 	def kill_with_retries!(options)
