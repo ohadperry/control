@@ -158,7 +158,7 @@ module ControlHelper
 	end
 
 	def skip_workers_message?(options)
-		options.fetch(Control_P::OPTIONS_ATTRIBUTES[:http_server], false)
+		options.fetch(Control_P::OPTIONS_ATTRIBUTES[:skip_workers_message], false)
 	end
 
 	def print_workers_and_delete_files!(type, extention)
