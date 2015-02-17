@@ -114,7 +114,7 @@ module ControlHelper
 	def app_not_running?(options)
 		pid_filename = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:pid_filename], nil)
 		raise "no pid filename found in #{options}" if pid_filename.nil?
-		p "working directory is #{Dir.pwd}"
+		p "working directory is #{Dir.pwd} , trying to cat #{pid_filename} , of type #{pid_filename.class}"
 		res = `cat #{pid_filename}`
 		p "result from cat master_pid is #{res}"
 		'' == res
