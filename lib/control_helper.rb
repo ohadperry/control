@@ -30,10 +30,13 @@ module ControlHelper
 
 	def find_pid_with_ps(search_by_string)
 		pid = nil
-		procs = `ps aux | grep #{search_by_string}` # todo add grep
+		search_string = "ps aux | grep #{search_by_string} | grep -v grep"
+		p "searching by #{search_string}"
+		procs = `#{search_string}` # todo add grep
 
 		procs.each_line do |proc|
 			if proc.include?(search_by_string)
+				p "found #{proc}"
 				res = proc.split(' ')
 				old_pid = res[1]
 				return old_pid.to_i
@@ -115,9 +118,21 @@ module ControlHelper
 		pid_filename = options.fetch(Control_P::OPTIONS_ATTRIBUTES[:pid_filename], nil)
 		raise "no pid filename found in #{options}" if pid_filename.nil?
 		p "working directory is #{Dir.pwd} , trying to cat #{pid_filename} , of type #{pid_filename.class}"
-		res = `cat #{pid_filename}`
-		p "result from cat master_pid is #{res}"
-		'' == res
+		res = get_pid_from_file(pid_filename)
+		p "result from get_pid_from_file is #{res} , type #{res.class}"
+		res = make_sure_pid_is_real!(res, pid_filename) unless res.nil?
+		!res.nil?
+	end
+
+	def make_sure_pid_is_real!(pid, pid_filename)
+		find_pid = find_pid_with_ps(pid)
+		if find_pid.nil?
+			p "didn't really find pid running, deleting the file #{pid_filename}"
+			res = File.delete(pid_filename) rescue p 'failed to delete master pid'
+			return nil
+		end
+
+		find_pid
 	end
 
 	def kill_with_retries!(options)
