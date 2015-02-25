@@ -121,18 +121,24 @@ module ControlHelper
 		res = get_pid_from_file(pid_filename)
 		p "result from get_pid_from_file is #{res} , type #{res.class}"
 		res = make_sure_pid_is_real!(res, pid_filename) unless res.nil?
-		!res.nil?
+		res.nil?
 	end
 
 	def make_sure_pid_is_real!(pid, pid_filename)
 		find_pid = find_pid_with_ps(pid)
 		if find_pid.nil?
 			p "didn't really find pid running, deleting the file #{pid_filename}"
-			res = File.delete(pid_filename) rescue p 'failed to delete master pid'
+			delete_file(pid_filename)
 			return nil
 		end
 
 		find_pid
+	end
+
+	def delete_file(file_name)
+		res = File.delete(file_name) 
+	rescue => e
+		p "failed to delete #{file_name} , #{e.inspect}"
 	end
 
 	def kill_with_retries!(options)
@@ -160,7 +166,11 @@ module ControlHelper
 		if pid
 			p "#{prefix} Ok, Restarted. new pid #{pid}"
 			if http_server?(options) && !skip_workers_message?(options)
-				print_workers_started_and_stopped(options) 
+				print_workers_started_and_stopped(options)
+				if Dir[Control_P::WORKERS_STARTED_EXTENTION].length < 1 
+					p "no workers has seemed to be started, check it out."
+					exit(1)
+				end 
 			end	
 			exit(0)
 		else
