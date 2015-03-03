@@ -166,11 +166,11 @@ module ControlHelper
 		if pid
 			p "#{prefix} Ok, Restarted. new pid #{pid}"
 			if http_server?(options) && !skip_workers_message?(options)
-				print_workers_started_and_stopped(options)
 				if Dir[Control_P::WORKERS_STARTED_EXTENTION].length < 1 
 					p 'no workers has seemed to be started, check it out.'
 					exit(1)
 				end 
+				print_workers_started_and_stopped(options)
 			end	
 			exit(0)
 		else
