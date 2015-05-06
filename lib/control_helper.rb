@@ -23,8 +23,10 @@ module ControlHelper
 	end
 
 	def get_pid_from_file(pid_filename)
-		return nil unless File.exists?(pid_filename)
-		File.open(pid_filename, &:readline).strip
+			return nil unless File.exists?(pid_filename)
+			File.open(pid_filename, &:readline).strip
+		rescue
+			return nil
 	end
 	
 
