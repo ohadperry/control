@@ -127,6 +127,8 @@ module ControlHelper
 	end
 
 	def make_sure_pid_is_real!(pid, pid_filename)
+		# TODO - fix this . don't validate by name but by pid (ps -p 'pid' -o comm=)
+		# http://superuser.com/questions/632979/if-i-know-the-pid-number-of-a-process-how-can-i-get-its-name
 		find_pid = find_pid_with_ps(pid)
 		if find_pid.nil?
 			p "didn't really find pid running, deleting the file #{pid_filename}"
