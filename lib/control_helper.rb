@@ -7,12 +7,12 @@ module ControlHelper
 		if pid_filename
 			get_pid_from_file(pid_filename)
 		else
-			search_by_string = retreive_search_string(options)
+			search_by_string = retrieve_search_string(options)
 			find_pid_with_ps(search_by_string)
 		end
 	end
 	
-	def retreive_search_string(options)
+	def retrieve_search_string(options)
 		attributes = Control_P::OPTIONS_ATTRIBUTES
 		find_by = options.fetch(attributes[:find_pid_by], Control_P::FIND_BY_OPTIONS[:app_filename])
 		#TODO validate find_by is in Control_P::FIND_BY_OPTIONS
@@ -31,8 +31,8 @@ module ControlHelper
 	
 
 	def find_pid_with_ps(search_by_string)
-		pid = nil
 		search_string = "ps aux | grep #{search_by_string} | grep -v grep"
+		pid = nil
 		p "searching by #{search_string}"
 		procs = `#{search_string}` # todo add grep
 
@@ -46,6 +46,16 @@ module ControlHelper
 		end
 
 		pid
+	end
+
+
+	def is_pid_alive?(process_id)
+		search_string =  "ps -p #{process_id} -o comm="
+		p "searching by #{search_string}"
+		procs = `#{search_string}` # todo add grep
+		p "found procs #{procs}"
+
+		procs == ''
 	end
 
 	def exit_if_not_running!(options)
@@ -129,14 +139,13 @@ module ControlHelper
 	def make_sure_pid_is_real!(pid, pid_filename)
 		# TODO - fix this . don't validate by name but by pid (ps -p 'pid' -o comm=)
 		# http://superuser.com/questions/632979/if-i-know-the-pid-number-of-a-process-how-can-i-get-its-name
-		find_pid = find_pid_with_ps(pid)
-		if find_pid.nil?
+		if is_pid_alive?(pid)
+			pid
+		else
 			p "didn't really find pid running, deleting the file #{pid_filename}"
 			delete_file(pid_filename)
-			return nil
+			nil
 		end
-
-		find_pid
 	end
 
 	def delete_file(file_name)
@@ -170,7 +179,7 @@ module ControlHelper
 		if pid
 			p "#{prefix} Ok, Restarted. new pid #{pid}"
 			if http_server?(options) && !skip_workers_message?(options)
-				if Dir[Control_P::WORKERS_STARTED_EXTENTION].length < 1 
+				if Dir[Control_P::WORKERS_STARTED_EXTENSION].length < 1
 					p 'no workers has seemed to be started, check it out.'
 					exit(1)
 				end 
@@ -185,17 +194,17 @@ module ControlHelper
 
 	#TODO add option to overwrite the file names
 	def print_workers_started_and_stopped(options)
-		print_workers_and_delete_files!('workers started', Control_P::WORKERS_STARTED_EXTENTION)
-		print_workers_and_delete_files!('workers closed', Control_P::WORKERS_CLOSED_EXTENTION)
+		print_workers_and_delete_files!('workers started', Control_P::WORKERS_STARTED_EXTENSION)
+		print_workers_and_delete_files!('workers closed', Control_P::WORKERS_CLOSED_EXTENSION)
 	end
 
 	def skip_workers_message?(options)
 		options.fetch(Control_P::OPTIONS_ATTRIBUTES[:skip_workers_message], false)
 	end
 
-	def print_workers_and_delete_files!(type, extention)
-		p "#{Dir[extention].length.to_s} #{type}"
-		Dir.glob(extention).each { |f| File.delete(f) }
+	def print_workers_and_delete_files!(type, extension)
+		p "#{Dir[extension].length.to_s} #{type}"
+		Dir.glob(extension).each { |f| File.delete(f) }
 	end
 
 	def http_server?(options)
