@@ -55,7 +55,7 @@ module ControlHelper
 		procs = `#{search_string}` # todo add grep
 		p "found procs #{procs}"
 
-		procs == ''
+		procs != ''
 	end
 
 	def exit_if_not_running!(options)
